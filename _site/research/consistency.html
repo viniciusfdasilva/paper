@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <Title>Vinicius F. Silva: Operation Ordering in Systems</title>
+        <meta name="viewport" content="width=device-width,
+				       initial-scale=1.0">
+	<link href="https://irenezhang.net/" rel="canonical">
+        <base href="https://irenezhang.net/">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/group.css" rel="stylesheet">
+        <link rel="alternate" type="application/atom+xml" title="Atom"
+              href="blog/blog.xml">
+        <link href="https://fonts.googleapis.com/css?family=Quattrocento|Quattrocento+Sans:400,400i,700|Raleway:500,700"
+              rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Piwik -->
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            _paq.push(["setDomains", ["*.irenezhang.net","*.irenezhang.com","*.schemeprincess.com"]]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+              var u="//www.ambulatoryclam.net/piwik/";
+              _paq.push(['setTrackerUrl', u+'piwik.php']);
+              _paq.push(['setSiteId', '2']);
+              var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+              g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
+        <noscript><p><img src="//www.ambulatoryclam.net/piwik/piwik.php?idsite=2" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+    </head>
+    <body>
+      <div class="header">
+        <div class="title clearfix">Irene Y. Zhang</div>
+	<ul class="nav nav-pills nav-justified">
+          
+          
+          <li >
+            <a href="/">
+              Home
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/research/">
+              Research
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/publications.html">
+              Publications
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/service.html">
+              Service
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/news/">
+              Blog
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/code.html">
+              Code
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-8">
+	    
+            
+            <h2>Operation Ordering in Systems</h2>
+	    
+            <p>Consistency models help programmers reason about the behavior of
+complex systems by providing a guarantee regarding the order in which
+the system will execute operations.  Consistency models come in
+different levels based on the strength of their ordering guarantees:
+strong consistency models (e.g., linearizability) impose more
+limitations on execution ordering than weak consistency models (e.g.,
+eventual consistency). This difference leads to a classic trade-off
+between consistency models and performance.</p>
+
+<p>Unfortunately, researchers in systems, architecture and databases have
+developed different and confusing terminology for models that limit
+execution ordering.  This article clarifies the difference between
+consistency, coherence and isolation, as well as some popular models
+for each, including, sequential consistency, serializability and
+linearizability.</p>
+
+<h3 id="consistency-vs-coherence-vs-isolation">Consistency vs. Coherence vs. Isolation</h3>
+
+<p>Before we dive into the different levels of consistency, coherence and
+isolation, I will define the guarantees themselves.</p>
+
+<p><strong>Consistency</strong>, as in the CAP theorem, defines how <em>copies of the set
+of data items</em> in a system relate to each other. Does the system
+ensure that they appear as if they are a single copy (to an
+application or an external observer)? Or do they appear to have some
+other apparent behavior (i.e., after some period of time they converge
+to a single copy)?</p>
+
+<p><strong>Coherence</strong> defines how <em>copies of a single item</em> relate to each
+other (assuming that the system holds more than one data item).
+Architects tend to define this differently from consistency due to
+reasoning about a single cache line vs. multiple cache lines. As a
+result, it is possible to have consistency bugs that are not coherence
+bugs.</p>
+
+<p><strong>Isolation</strong>, in ACID, defines the how <em>sets of multiple operations
+on the set of data items</em> in a system relate to each other. Does the
+system ensure that a set of operations (grouped together in a
+<em>transaction</em>) appear as if they ran at a single point in time? Do
+transactions then appear as if they each ran sequentially on a single
+copy of the database?  Or some other behavior (i.e., each transaction
+ran on its own snapshot of the database)?</p>
+
+<p>In summary, (1) coherence dictates how a system orders operations for
+a single data item in the system, (2) consistency dictates how a
+system orders operations for the entire set of data items in the
+system, and (3) isolation dictates how a system orders sets of
+operations grouped in transactions over the entire set of items in the
+system. As a side effect, consistency is a total ordering guarantee
+for a set of replicas, while isolation is a partial ordering guarantee
+(because not every transaction touches every data item).</p>
+
+<h3 id="what-about-the-c-in-acid">What about the C in ACID?</h3>
+
+<p>Unlike isolation and CAP consistency, the ACID type of consistency is
+not a system guarantee, but an application-specific invariant (e.g.,
+bank account balance must be always greater than 0). Enforcing this
+type of consistency depends on the application as well as the
+system. For example, the A, I &amp; D system guarantees ensure that
+application doesn’t see uncommitted or other intermediate state, but
+the application needs to ensure that it does not violate its own
+invariants (e.g., the application needs to check the bank account
+balance before withdrawing); otherwise, the database will abort the
+transaction.</p>
+
+<p>I’ve been reading some great old database papers recommended by Phil
+Bernstein, and Thomas [1] defines, <em>internal consistency</em> as the C in
+ACID and <em>mutual consistency</em> as the C in CAP (both of which should
+not be confused with external consistency!), which I think is a great
+way to differentiate the two.</p>
+
+<p>As Thomas says,</p>
+<blockquote>
+  <p>The notion of internal consistency is somewhat more difficult to
+define precisely. It concerns the preservation of invariant relations
+that exist among items within a database. As such, internal
+consistency is related to the interpretation or semantics of items in
+the database. Therefore, most of the responsibility for the internal
+consistency of a database must rest with the application processes
+which update it.</p>
+</blockquote>
+
+<p>Support for this kind of consistency is available in modern database
+systems, but rarely discussed.  As a result, when people talk about
+transactional consistency or database consistency it becomes
+confusing, they almost always mean isolation.</p>
+
+<h3 id="linearizability-serializability-and-others">Linearizability, Serializability and Others</h3>
+
+<p>OK, now back to how we order operations and transactions in a storage
+system.  There are so many different levels of ordering guarantees
+that this is a huge topic. I will primarily talk about the strongest
+variants because these are the best defined.</p>
+
+<p><strong>Sequential (or serializable) consistency</strong> ensures that the same
+operations are applied in the same order to every copy of a set of
+data items.</p>
+
+<p><strong>Serializable isolation</strong> ensures that transactions execute as if
+they were executing one at a time on a single copy of the database.</p>
+
+<p><strong>Linearizable consistency</strong> ensures that the same operations are
+applied in the same order to every copy of the data item and that the
+order reflects the order in which the operations <em>appear</em> to execute
+to an external observer (like the application).</p>
+
+<p><strong>Strict serializable isolation</strong> ensures that transactions execute as
+if they were executing one at a time on a single copy of the database
+and that the order matches the order in which the transactions
+<em>appear</em> to execute to an external observer (like the application).</p>
+
+<p>There has been much discussion of externally consistent (or
+linearizable) transactions since the publication of Google’s Spanner
+system [2]. Traditionally, the guarantees provided by Spanner and
+applied to transactions would be called strict serializability.
+Practically, it doesn’t matter: <em>linearizability is just strict
+serializability for single operations.</em></p>
+
+<h3 id="strong-isolation-without-strong-consistency">Strong isolation without strong consistency</h3>
+
+<p>It might seem that consistency and isolation are tied together in a
+database system. If a database has one level of isolation (e.g.,
+strict serializability) for transactions, then it typically replicates
+single data items with a matching level of consistency (e.g.,
+linearizability).  Or put another way, if you want a strict serial
+ordering of transactions, you need to start with a strict serial
+ordering of operations, right? (See why this is confusing?)</p>
+
+<p>Interestingly, we demonstrated that this is not necessary in the
+<a href="research/tapir/">TAPIR project</a>[3].  TAPIR is a new
+protocol that provides strong isolation guarantees without any
+consistency guarantees. Our observation is that there is no need to
+enforce both isolation <em>and</em> consistency in a transactional storage
+system that uses replication. This has all kinds of benefits, like
+letting us get away without using an expensive replication protocol
+like Paxos.</p>
+
+<h3 id="summary">Summary</h3>
+
+<ul>
+  <li>The C in CAP and the C in ACID are not the same thing.</li>
+  <li>When people talk about strong consistency in databases, they
+typically mean strong isolation.</li>
+  <li>It is possible to have strong isolation (or what people call strong
+database consistency) without strong consistency (as demonstrated in
+TAPIR).</li>
+</ul>
+
+<h3 id="references">References</h3>
+
+<p>[1] R. H. Thomas. <a href="http://dl.acm.org/citation.cfm?id=320076">A majority consensus approach to concurrency
+control for multiple copy
+databases</a>. <em>ACM Transactions
+on Database Systems</em>, 4(2):180–209, June 1979.</p>
+
+<p>[2] J. C. Corbett et al. <a href="http://research.google.com/archive/spanner.html">Spanner: Google’s globally-distributed
+database</a>. In
+<em>Proceedings of OSDI</em>, 2012.</p>
+
+<p>[3] I. Zhang et al. <a href="/papers/tapir-sosp15.pdf">Building Consistent Transactions with
+Inconsistent Replication</a>. In
+<em>Proceedings of SOSP</em>, 2015.</p>
+
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <div class="contact">
+              <div class="contact-title">
+                Contact</div>
+                <ul class="fa-ul">
+	          <li><i class="fa-li fa fa-envelope"></i>irene.zhang
+	            @microsoft.com</li>
+	          <li><i class="fa-li fa fa-building"></i>Office 2869,
+                    Building 99</li>
+	          <li><i class="fa-li fa fa-location-arrow"></i>14820 NE
+	            36th St.
+                    <br class="hidden-xs"> Redmond, WA</li>
+	          <li><i class="fa-li fa
+	                        fa-github-alt"></i><a href="https://github.com/iyzhang/">iyzhang@github</a></li>
+                  	          <li><i class="fa-li fa fa-twitter"></i><a href="https://twitter.com/schemeprincess">schemeprincess@twitter</a></li>
+
+                </ul>
+            </div>
+            <div class="contact hidden-xs">
+              <div class="contact-title">News</div>
+              <ul class="media-list">
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      15 August 2022
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2022/08/15/datacenter-hardware.html">The Fall of Datacenter Software</a>
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-left news hidden-xs">
+                    
+	              <img class="media-object img-thumbnail"
+                           src="img/demikernel.jpg" >
+                      
+                  </div>
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      07 August 2021
+                    </h5>
+                    
+                    <p>I’m extremely happy to announce that I will have three papers on
+kernel-bypass systems in SOSP 2021!  Our work on the <a href="papers/demikernel-sosp21.pdf">Demikernel
+datapath OS</a>, the <a href="papers/persephone-sosp21.pdf">Persephone
+scheduler</a> for microsecond RPC and the
+<a href="papers/prism-sosp21.pdf">PRISM RDMA</a> interface for distributed
+storage.</p>
+
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      18 July 2021
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2021/07/18/superhero-network.html">The Superhero Network - A Case for Expertise in CS Sexism and Harassment</a>
+                    
+                  </div>
+                </li>
+                
+              </ul>
+              <p><a href="news/">&nbsp;&nbsp;&nbsp;Older posts&hellip;</a></p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>
+          <a href="https://www.microsoft.com/en-us/research/group/systems-research-group-redmond/">Systems
+          Research Group</a> at 
+          <a href="https://www.microsoft.com/">Microsoft Research</a>
+        </p>
+      </div>
+    </body>
+</html>

@@ -1,0 +1,623 @@
+% -*- mode: latex; TeX-PDF-mode:t; -*-
+\documentclass[10pt,times]{report}
+\usepackage[letterpaper,text={6.5in,9.5in},centering,nofoot]{geometry}
+% use the showframe option in the above line to show the frame
+\usepackage{microtype}
+%\usepackage{MinionPro}
+\setlength{\tabcolsep}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parsep}{0pt}
+
+
+% Separation between header and body
+\newlength{\partgap}
+\setlength{\partgap}{.2in}
+
+% Additional separation between sections
+\newlength{\sectiongap}
+\setlength{\sectiongap}{.6em}
+
+% Separation between entries
+\newlength{\entrygap}
+\setlength{\entrygap}{.25em}
+
+\newlength{\sectioncolwidth}
+\setlength{\sectioncolwidth}{1in}
+\newlength{\colgap}
+\setlength{\colgap}{.5em}
+\newlength{\stuffwidth}
+\setlength{\stuffwidth}{\textwidth}
+\addtolength{\stuffwidth}{-\colgap}
+\addtolength{\stuffwidth}{-\sectioncolwidth}
+\addtolength{\stuffwidth}{-.5em}  % minipage margins?
+
+\pagestyle{empty}
+
+
+% From TeX by Topic
+\def\ifEqString#1#2{\def\testa{#1}\def\testb{#2}%
+  \ifx\testa\testb}
+
+\newenvironment{rtable}{
+  \begin{minipage}{\textwidth}
+  }{
+  \end{minipage}
+}
+
+\newenvironment{rentry}[3][xxx]{
+  \begin{minipage}[t]{\hsize}
+    \textbf{#2}\ifEqString{#1}{xxx}\relax\else, \textit{#1}\fi
+    \hspace{\stretch{1}} #3 \\
+  }{
+    \removelastskip
+  \end{minipage}
+  \\[\entrygap]  % Useful for page squeezing
+}
+
+\newcommand{\rline}[2]{
+  \begin{minipage}[t]{\hsize}
+    #1 \hspace{\stretch{1}} #2
+  \end{minipage} \\
+}
+
+\newenvironment{rsection}[1]{
+  \begin{minipage}[t]{\sectioncolwidth}
+    \textsc{#1}
+  \end{minipage}
+  \hspace{\colgap}
+  \begin{minipage}[t]{\stuffwidth}
+  }{
+    \removelastskip
+  \end{minipage}
+  \\[\sectiongap]
+}
+
+\newenvironment{ritemize}{%
+  \begin{list}{$\cdot$}{\topsep 0pt \parskip 0pt \partopsep 0pt
+      \itemsep 0pt \parsep 0pt}%
+}{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% Name
+\begin{center}
+  \LARGE{\sc{Irene Y. Zhang}}
+\end{center}
+\vspace{2mm}
+
+% Contact info
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \texttt{Irene.Zhang@microsoft.com} & \texttt{https://www.irenezhang.net} \\ 
+\end{tabular*}
+
+\vspace{\partgap}
+
+% Table
+\begin{rtable}
+  \begin{rsection}{Education}
+    \begin{rentry}{University of Washington}{Seattle, WA}
+      \rline{Ph.D. in Computer Science and Engineering}{Sept 2017}
+      Advisors: Hank Levy and Arvind Krishnamurthy\\
+      Thesis: \textit{Towards a Flexible, High-Performance Operating System
+      for Mobile/Cloud Applications}
+    \end{rentry}
+
+    \begin{rentry}{University of Washington}{Seattle, WA}
+      \rline{M.S. in Computer Science and Engineering}{December 2013}
+      Advisors: Hank Levy, Arvind Krishnamurthy, and Steve Gribble\\
+      Thesis: \textit{Simplifying Mobile/Cloud Applications with Sapphire}
+    \end{rentry}
+
+    \begin{rentry}{Massachusetts Institute of Technology}{Cambridge,
+        MA} \rline{M.Eng. in Electrical Engineering and Computer
+        Science}{June 2009} Advisors: M. Frans Kaashoek and Jeremy Stribling\\
+      Thesis: \textit{Efficient File Distribution in a Flexible, Wide-area
+        File System}
+    \end{rentry}
+
+    \begin{rentry}{Massachusetts Institute of Technology}{Cambridge, MA}        
+      \rline{S.B. in Computer Science and Engineering}{June 2008}
+    \end{rentry}
+    \vspace{-0.5em}  
+  \end{rsection}
+
+  \begin{rsection}{Interests}
+    Operating systems, distributed systems, virtualization, and networking
+  \end{rsection}
+  
+  \begin{rsection}{Recent\\Research\\Highlights}
+    \begin{rentry}{Demikernel}{SOSP 2021}
+      The Demikernel is a new datapath OS and architecture for
+      microsecond-scale datacenter systems and kernel-bypass
+      devices. Demikernel accommodates heterogenous kernel-bypass
+      devices with a flexible library OS architecture and new
+      high-level datapath API with an asynchronous I/O interface and
+      zero-copy memory semantics for microsecond I/O
+      processing. Demikernel implements this API for RDMA, DPDK and
+      SPDK devices with new nanosecond-scale I/O stacks in Rust. Once
+      ported to Demikernel, microsecond datacenter systems can run
+      across different devices with no code changes.
+    \end{rentry}
+    
+    \begin{rentry}{Persephone}{SOSP 2021}
+      Persephone is a kernel-bypass OS scheduler designed to minimize
+      tail latency for microsecond-scale applications with wide
+      service time distributions. Persephone integrates a new
+      scheduling policy, Dynamic Application-aware Reserved Cores
+      (DARC), that reserves cores for requests with short processing
+      times. Unlike existing kernel-bypass schedulers, DARC is not
+      work conserving. DARC profiles application requests and leaves a
+      small number of cores idle when no short requests are in the
+      queue, so when short requests do arrive, they are not blocked by
+      longer-running ones. Counter-intuitively, leaving cores idle
+      lets DARC maintain lower tail latencies at higher utilization,
+      reducing the overall number of cores needed to serve the same
+      workloads and consequently better utilizing the data center
+      resources.
+    \end{rentry}
+    
+    \begin{rentry}{Persimmon}{OSDI 2020}
+          Persimmon is a persistent memory system that presents a new
+          persistent state machine abstraction (PSM) to applications,
+          which captures both the granularity of atomic persistent
+          operations and the data that should be persisted. Persistent
+          state machines nicely capture the RPC-processing behavior of
+          modern datacenter storage systems. As a result, Persimmon is
+          able to converts existing distributed in-memory storage
+          systems into persistent, crash-consistent versions with low
+          overhead and minimal code changes.
+    \end{rentry}
+
+  \end{rsection}    
+\end{rtable}
+
+\begin{rtable}
+  
+  \begin{rsection}{Conference\\Publications}
+    \textbf{I. Zhang}, A. Raybuck, P. Patel, K. Olynyk, J. Nelson,
+    O. S. Navarro Leija, A. Martinez, J. Liu, A. Kornfeld Simpson,
+    S. Jayakar, P. H.  Penna, M. Demoulin, P. Choudhury, and
+    A. Badam. \textit{The Demikernel Datapath OS Architecture for
+      Microsecond-scale Datacenter Systems.  } Proc. of the ACM
+    Symposium on Operating Systems Principles (SOSP). October
+    2021. \\\vspace{-0.5em}
+
+    S. Dharanipragada, S. Joyner, M. Burke, A.  Szekeres, J. Nelson,
+    \textbf{I. Zhang}, and D. R. K. Ports. \textit{PRISM: Rethinking
+      the RDMA Interface for Distributed Systems.}  Proc. of the
+    ACM Symposium on Operating Systems Principles (SOSP). October
+    2021. \\\vspace{-0.5em}
+
+    M. Demoulin, J. Fried, I. Pedisich, M. Kogias, B. T. Loo,
+    L. T. X. Phan, and \textbf{I. Zhang}. \textit{When Idling is
+      Ideal: Optimizing Tail-Latency for Highly-Dispersed Datacenter
+      Workloads with Persephone.  } Proc. of the ACM Symposium
+    on Operating Systems Principles (SOSP). October
+    2021. \\\vspace{-0.5em}
+
+    R. Cheng, W. Scott, E. Masserova, \textbf{I. Zhang}, V. Goyal,
+    T. Anderson, A. Krishnamurthy, and B. Parno. \textit{Talek:
+      Private Group Messaging with Hidden Access Patterns.} Annual
+    Computer Security Applications Conference (ACSAC). December
+    2020. \\\vspace{-0.5em}
+
+    W. Zhang, S. Shenker, and \textbf{I. Zhang}.  \textit{Persistent
+      State Machines for Recoverable In-memory Storage Systems with
+      NVRam.}  Proc. of the USENIX Symposium on Operating
+    Systems Design and Implementation (OSDI). November
+    2020. \\\vspace{-0.5em}
+    
+    N. Lebeck, A. Krishnamurthy, H. M. Levy, and
+    \textbf{I. Zhang}. \textit{End the Senseless Killing: Improving
+      Memory Management for Mobile Operating Systems.}  Proc. of
+    the USENIX Annual Technical Conference (ATC). July
+    2020. \\\vspace{-0.5em}
+
+    H. Li, M. Hao, S. Novakovic, V. Gogte, S. Govindan,
+    D. R. K. Ports, \textbf{I. Zhang}, R. Bianchini, H. S. Gunawi, and
+    A. Badam. \textbf{ Efficient and Portable Virtual NVMe Storage on
+      ARM SoCs.}  Proc. of the International Conference on
+    Architectural Support for Programming Languages and Operating
+    Systems (ASPLOS). March 2020.\\\vspace{-0.5em}
+    
+    J. Goldstein, A. Abdelhamid, M. Barnett, S. Burckhardt,
+    B. Chandramouli, D. Gehring, N. Lebeck, C.  Meiklejohn,
+    U. F. Minhas, R. Newton, R. Peshawaria, T.  Zaccai, and
+    \textbf{I. Zhang}.  \textit{ A.M.B.R.O.S.I.A: Providing Performant
+      Virtual Resiliency for Distributed Applications.} Proc. of
+    the International Conference on Very Large Data Bases (VLDB).
+    December 2019. \\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, N. Lebeck, P. Fonseca, B. Holt, R. Cheng,
+    A. Norberg, A. Krishnamurthy, H.  M. Levy. \textit{Automating Data
+      Management for Wide-area, Reactive Applications.}  In
+    Proc. of the USENIX Symposium on Operating Systems Design
+    and Implementation (OSDI). November 2016.\\\vspace{-0.5em}
+
+    B. Holt, J. Bornholt, \textbf{I. Zhang}, D. R. K. Ports, M.
+    Oskin, L. Ceze. \textit{Disciplined Inconsistency.}  In
+    Proc. of the ACM Symposium on Cloud Computing (SoCC).
+    October 2016.\\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, N. K. Sharma, A. Szekeres, D. R. K. Ports,
+    A. Krishnamurthy. \textit{Building Consistent Transactions with
+      Inconsistent Replication.}.  In Proc. of the ACM Symposium
+    on Operating Systems Principles (SOSP).  October
+    2015.\\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, A. Szekeres, D. Van Aken, I. Ackerman,
+    S. D. Gribble, A. Krishnamurthy, H. M. Levy. \textit{Customizable
+      and Extensible Deployment for Mobile/Cloud Applications.}  In
+    Proc. of the USENIX Symposium on Operating Systems Design
+    and
+    Implementation (OSDI).  October 2014.\\
+    \vspace{-0.5em}
+
+    S. Peter, J. Li, \textbf{I. Zhang}, D. R. K. Ports, D.  Woos,
+    A. Krishnamurthy, T. Anderson, T. Roscoe.  \textit{Arrakis: The
+      Operating System is the Control Plane.}  In Proc. of the
+    USENIX Symposium on Operating Systems Design and Implementation
+    (OSDI).  October 2014. \textbf{Best Paper Award}.\\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, T. Denniston, Y. Baskakov, A. Garthwaite.
+    \textit{Optimizing VM Checkpointing for Restore Performance in
+      VMware ESXi.}  In Proc. of the USENIX Annual Technical
+    Conference (USENIX ATC).  June 2013.
+  \end{rsection}  
+\end{rtable}
+
+\begin{rtable}
+  \begin{rsection}    
+    \textbf{I. Zhang}, A. Garthwaite, Y. Baskakov,
+    K. C. Barr. \textit{Fast Restore of Checkpointed Memory Using
+      Working Set Estimation.}  In Proc. of the ACM Conference
+    on Virtual Execution Environments (VEE).  March
+    2011.\\\vspace{-0.5em}
+
+    D. R. K. Ports, A. Clements, \textbf{I. Zhang}, S. Madden,
+    B. Liskov. \textit{Transactional Consistency and Automatic
+      Management in an Application Data Cache.}  In Proc. of the
+    USENIX Symposium on Operating Systems Design and Implementation
+    (OSDI). October 2010.\\\vspace{-0.5em}
+
+    J. Stribling, Y. Sovran, \textbf{I. Zhang}, X. Pretzer, J. Li,
+    M. F. Kaashoek, R. Morris. \textit{Flexible, Wide-Area Storage for
+      Distributed Systems with WheelFS.}  In Proc. of the USENIX
+    Symposium on Networked Systems Design and
+    Implementation (NSDI).  April 2009.
+  \end{rsection}
+  
+  \begin{rsection}{Journal\\Publications}
+    \textbf{I. Zhang}, N. K. Sharma, A. Szekeres, A. Krishnamurhty,
+    D. R. K. Ports. \textit{Building Consistent Transactions with
+      Inconsistent Replication.}.  ACM Transactions on Computer
+    Systems (TOCS). December 2018. \\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, F. Adib, P. Bailis. \textit{Research for
+      Practice: Distributed Transactions and Networks as Physical
+      Sensors}. ACM Queue. October 2016.\\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, N. K. Sharma, A. Szekeres,
+    D. R. K. Ports, A. Krishnamurthy. \textit{When Is Operation
+      Ordering Required in Replicated Transactional Storage?}.  IEEE
+    Data Engineering Bulletin. March 2016.\\\vspace{-0.5em}
+
+    S. Peter, J. Li, \textbf{I. Zhang}, D. R. K. Ports, D. Woos,
+    A. Krishnamurthy, T. Anderson, T. Roscoe.  \textit{Arrakis: The
+      Operating System is the Control Plane.}  ACM Transactions on
+    Computer Systems (TOCS). November 2015.
+  \end{rsection}
+  
+  \begin{rsection}{Workshop\\Publications}
+    D. Raghavan, P. Levis, M. Zaharia, and
+    \textbf{I. Zhang}. \textit{Breakfast of Champions: Towards
+      Zero-Copy Serialization with NIC Scatter-Gather.}  Proc.
+    of the Workshop on Hot Topics in Operating Systems (HotOS). June
+    2021.\\\vspace{-0.5em}
+
+    A. Ousterhout, A. Belay, and \textbf{I. Zhang}. \textit{Just In
+      Time Delivery: Leveraging Operating Systems Knowledge for Better
+      Datacenter Congestion Control.  } Proc. of the Workshop on
+    Hot Topics in Cloud Computing (HotCloud). Renton, WA. July
+    2019. \\\vspace{-0.5em}
+
+    \textbf{I. Zhang}, J. Liu, A. Austin, M.  L. Roberts, and
+    A. Badam.  \textit{I'm Not Dead Yet! The Role of the Operating
+      System in a Kernel-Bypass Era. } Proc. of the Workshop on
+    Hot Topics in Operating Systems (HotOS). Bertinoro, Italy. May
+    2019.\\\vspace{-0.5em}
+
+    A. Szekeres and \textbf{I. Zhang}. \textit{Making Consistency More
+      Consistent: A Unified Model for Coherence, Consistency and
+      Isolation}. In Proc. of the Workshop on Principles and
+    Practice of Consistency for Distributed Data (PaPoC). Porto,
+    Portugal. April 2018. \\\vspace{-0.5em}
+
+    B. Holt, \textbf{I. Zhang}, D. R. K. Ports, M. Oskin and L. Ceze.
+    \textit{Claret: Using Data Types for Highly Concurrent Distributed
+      Transactions.} In Proc. of the Workshop on Principles and
+    Practice of Consistency for Distributed Data (PaPoC).  Bordeaux,
+    France. April 2015.\\\vspace{-0.5em}
+
+    S. Peter, J. Li, D. Woos, \textbf{I. Zhang}, D. R. K. Ports,
+    T. Anderson, A. Krishnamurthy, M. Zbikowski. \textit{Towards
+      High-Performance Application-Level Storage Management.} In
+    Proc. of the USENIX Workshop on Hot Topics in Storage and
+    File Systems (HotStorage). Philadelphia, PA. June
+    2014.
+  \end{rsection}
+
+  \begin{rsection}{Fellowships\\\& Awards}
+    \begin{rentry}{UW CSE William Chan Memorial Dissertation}{2018}
+      \vspace{-0.75em}
+    \end{rentry} 
+    \begin{rentry}{Microsoft Research PhD Fellowship}{2015}
+      \vspace{-0.75em}
+    \end{rentry} 
+    \begin{rentry}{Google Anita Borg Memorial Fellowship}{2015}
+      \vspace{-0.75em}
+    \end{rentry} 
+    \begin{rentry}{National Science Foundation Fellowship}{2013}
+      \vspace{-0.75em}
+    \end{rentry}
+    \begin{rentry}{ARCS Foundation Fellowship}{2012}
+       \vspace{-0.75em}
+    \end{rentry}
+    \begin{rentry}{Jeff Dean and Heidi Hopper Endowed Regental Fellowship}{2012}
+       \vspace{-0.75em}
+    \end{rentry}
+    \begin{rentry}{OSDI Best Paper Award}{2014}
+      \vspace{-0.75em}
+    \end{rentry}
+    % \begin{rentry}{CRA Outstanding Undergraduate Award, Honorable
+    %   Mention}{2008}
+    % \vspace{-0.75em}
+    % \end{rentry}
+    % \begin{rentry}{Rising Stars Workshop}{2016}
+    %   \vspace{-0.75em}
+    % \end{rentry} 
+    %\begin{rentry}{NCWIT Collegiate Award Runner-up}{2016}
+    %  \vspace{-0.75em}
+    %\end{rentry} 
+    % \begin{rentry}{UW CSE Industrial Affiliates Madrona Prize Runner-Up}{2015}
+    %  \vspace{-0.75em}
+    % \end{rentry} 
+    % \begin{rentry}{Bob Bandes Teaching Award Honorable Mention}{2015}
+    %   \vspace{-0.75em}
+    % \end{rentry} 
+    % \begin{rentry}{UW CSE Industrial Affiliates Madrona Prize}{2014}
+    %    \vspace{-0.75em}
+    % \end{rentry}
+    % \begin{rentry}{National Science Board Annual Meeting Student
+    %     Panel}{2013}
+    %   \vspace{-0.75em}
+    % \end{rentry}
+    % \begin{rentry}{VMware Academic Program Top Intern Project}{2008}
+    %    \vspace{-0.75em}
+    % \end{rentry}
+    % \begin{rentry}{Northern Telecom/BNR Award for Best Undergrad. Lab
+    %     Project}{2006}
+    %   \vspace{-0.75em}
+    % \end{rentry}
+  \end{rsection}
+\end{rtable}
+
+\begin{rtable}
+
+  \begin{rsection}{Service}
+    \begin{rentry}{VEE, Program Chair}{2021}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{OSDI, Program Committee}{2021}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{SOSP, Program Committee}{2021}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{EuroDW, Program Chair}{2021}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{NSDI, Program Committee}{2021}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{OSDI, Program Committee}{2020}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{EuroSys, Program Committee}{2020}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{EuroDW, Program Committee}{2020}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{APSys, Program Committee}{2020}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{SOSP, Program Committee}{2019}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{NSDI, Program Committee}{2019}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{ASPLOS, Program Committee}{2019}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{OSDI, Program Committee}{2018}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{USENIX ATC, Program Committee}{2018}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{VEE, Program Committee}{2018}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{ASPLOS, External Reviewer}{2017}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{OSDI, External Reviewer}{2016}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{HotCloud, Program Committee}{2016}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{UW HotPoCSci, Founder}{2015}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{UW PoCSci, PC Chair}{2015-2016}
+       \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{UW CSE Annual Women's Research Day}{}
+      \rline{Committee}{2017}
+      \rline{Chair}{2016}
+      \rline{Founder}{2015}
+       \vspace{-0.5em}
+    \end{rentry}
+  \end{rsection}
+  \begin{rsection}{Teaching}
+    \begin{rentry}{Distributed Systems (UW CSE 452)}{Seattle, WA}
+      \rline{Teaching Assistant}{Winter 2016}   
+      \rline{Teaching Assistant}{Winter 2015}   
+      \vspace{-0.5em}   
+    \end{rentry}
+    \begin{rentry}{Introduction to Operating Systems (UW CSE
+        451)}{Seattle, WA}
+      \rline{Tutor}{Spring 2016}
+      \rline{Tutor}{Fall 2014}
+      \rline{Tutor}{Spring 2014}
+      \rline{Guest Lecturer}{Fall 2013}
+      \rline{Tutor}{Spring 2013}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{The Hardware/Software Interface (UW CSE
+        351)}{Seattle, WA}
+      \rline{Tutor, UW Department of CSE}{Winter 2014}
+      \rline{Tutor, UW Department of CSE}{Winter 2013}
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{Operating Systems Engineering (MIT
+        6.828)}{Cambridge, MA}
+      \rline{Teaching Assistant}{Fall 2008}
+      % Developed and graded labs assignments where students build an
+      % exokernel-style OS. Held weekly office hours to help students
+      % with labs and OS fundamentals like virtual memory management,
+      % interrupt handlers and process management.
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{Intro. to Digital Systems Lab (MIT
+        6.111)}{Cambridge, MA}
+      \rline{Teaching Assistant}{Spring 2008}
+      % Taught weekly recitations and helped students with labs using
+      % FPGAs and Verilog. Helped students design and implement complex
+      % final projects such as 3D object tracking. Received student
+      % evaluation of 6.3/7.0, one of the highest ratings in the last 5
+      % years.
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{Computation Structures (MIT 6.004)}{Cambridge, MA}
+      \rline{Lab Assistant}{Spring 2007}
+% Held office
+%       hours to help students design and build a processor and small OS
+%       kernel in simulation.
+      \vspace{-0.5em}
+    \end{rentry}
+    \begin{rentry}{Intro. to Computer Science and
+        Programming (MIT 6.00)}{Cambridge, MA}
+      \rline{Lab Assistant}{Fall 2006}
+ % Taught students
+ %      basic computer science concepts such as recursion, abstraction
+ %      and OOP.
+      \vspace{-1em}
+    \end{rentry}
+  \end{rsection}
+
+
+\end{rtable}
+
+\begin{rtable}
+  \begin{rsection}{Patents}
+    US Patent App. 12/559,484.
+    \textit{Saving and Restoring State Information for Virtualized
+      Computer Systems.} 
+    \textbf{I. Zhang}, K. C. Barr, G. Venkitachalam, I. Ahmad, A. Garthwaite, J. Pool.\\\vspace{-0.5em}
+
+    US Patent App. 13/710,185. 
+    \textit{Method for Saving Virtual Machine State from a Checkpoint
+    File.}  A. Garthwaite, Y. Baskakov, \textbf{I. Zhang}, K. Christopher,
+    J. Pool.\\\vspace{-0.5em}
+
+    US Patent App. 13/710,215. \textit{Method for Restoring Virtual Machine State from a Checkpoint
+    File.} A. Garthwaite, Y. Baskakov, \textbf{I. Zhang}, K. Christopher,
+    J. Pool.\\\vspace{-0.5em}
+    
+    US Patent App. 13/935,382. \textit{Identification of Page Sharing Opportunities within Large Pages.} Y. Baskakov, A. Garthwaite, R. Venkatasubramanian, \textbf{I. Zhang}, S. Kim, N. Bhatia, K. Tati\\
+  \end{rsection}
+
+  \begin{rsection}{Work\\Experience}
+    \begin{rentry}{Microsoft Research}{Redmond, WA}
+      \rline{Researcher, Systems Research Group} {Oct 2017 - current}
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{VMware, Inc.}{Cambridge, MA}      
+      \rline{MTS, Virtual Machine Monitor
+        Group}{Jan 2010 - Feb 2013}
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{VMware, Inc.}{Cambridge, MA}      
+      \rline{R\&D Intern, Virtual Machine Monitor Group}{Jul - Dec 2009}
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{VMware, Inc.}{Cambridge, MA}      
+      \rline{R\&D Intern, Core Performance Group}{Jun - Aug 2008}
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{Quickware Engineering and Design}{Waltham, MA}
+      \rline{Engineering Intern}{Jun - Aug 2007} 
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{Cummins, Inc.}{Columbus, IN}
+      \rline{Engineering Intern, Analysis Led Design}{Jun - Aug 2005}
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{Cummins, Inc.}{Beijing, China}
+      \rline{International Business Intern}{Jun - Jul 2004} 
+      \vspace{-.5em}
+    \end{rentry}
+    \begin{rentry}{ArvinMeritor, Inc.}{Columbus, IN}
+      \rline{Web Development Intern}{Aug 2003 - May 2004}
+      \vspace{-.5em}
+    \end{rentry}
+  \end{rsection}
+
+  % \begin{rsection}{References}
+  %   Henry M. Levy\\
+  %   Chairman \& Wissner-Slivka Chair\\
+  %   Department of Computer Science \& Engineering, University of Washington\\
+  %   \texttt{levy@cs.washington.edu}\\
+  %   \vspace{-.5em}
+    
+  %   Arvind Krishnamurthy\\
+  %   Professor\\
+  %   Department of Computer Science \& Engineering, University of Washington\\
+  %   \texttt{arvind@cs.washington.edu}\\
+  %   \vspace{-.5em}
+    
+  %   Thomas E. Anderson\\
+  %   Warren Francis \& Wilma Kolm Bradley Chair\\
+  %   Department of Computer Science \& Engineering, University of Washington\\
+  %   \texttt{tom@cs.washington.edu}\\
+  %   \vspace{-.5em}
+    
+  %   M. Frans Kaashoek\\
+  %   Charles Piper Professor\\
+  %   Department of Electrical Engineering \& Computer Science, MIT\\
+  %   \texttt{kaashoek@csail.mit.edu}\\
+  %   \vspace{-.5em}
+    
+  %   Edward D. Lazowska\\
+  %   Bill \& Melinda Gates Chair\\
+  %   Department of Computer Science \& Engineering, University of Washington\\
+  %   \texttt{lazowska@cs.washington.edu}\\
+  % \end{rsection}
+\end{rtable}
+\end{document}

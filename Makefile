@@ -1,4 +1,4 @@
-PYTHON=python2.7
+PYTHON=python3.10
 BIBTEX=bibtex
 JEKYLL=jekyll
 
@@ -24,7 +24,7 @@ clean:
 	$(RM) -r _site _includes/pubs.html
 	$(MAKE) -C cv clean
 
-HOST := irene@geoduck.ambulatoryclam.net
+HOST := me@silvavinicius.com.br
 
 deploy: clean all
 	rsync --compress --recursive --checksum --itemize-changes --delete -e ssh _site/ $(HOST):schemeprincess

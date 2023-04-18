@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <Title>Vinicius F. Silva: Lessons learned from TAPIR(s)</title>
+        <meta name="viewport" content="width=device-width,
+				       initial-scale=1.0">
+	<link href="https://irenezhang.net/" rel="canonical">
+        <base href="https://irenezhang.net/">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/group.css" rel="stylesheet">
+        <link rel="alternate" type="application/atom+xml" title="Atom"
+              href="blog/blog.xml">
+        <link href="https://fonts.googleapis.com/css?family=Quattrocento|Quattrocento+Sans:400,400i,700|Raleway:500,700"
+              rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Piwik -->
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            _paq.push(["setDomains", ["*.irenezhang.net","*.irenezhang.com","*.schemeprincess.com"]]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+              var u="//www.ambulatoryclam.net/piwik/";
+              _paq.push(['setTrackerUrl', u+'piwik.php']);
+              _paq.push(['setSiteId', '2']);
+              var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+              g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
+        <noscript><p><img src="//www.ambulatoryclam.net/piwik/piwik.php?idsite=2" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+    </head>
+    <body>
+      <div class="header">
+        <div class="title clearfix">Irene Y. Zhang</div>
+	<ul class="nav nav-pills nav-justified">
+          
+          
+          <li >
+            <a href="/">
+              Home
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/research/">
+              Research
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/publications.html">
+              Publications
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/service.html">
+              Service
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/news/">
+              Blog
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/code.html">
+              Code
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-8">
+	    
+            
+            <h2>Lessons learned from TAPIR(s)</h2>
+	    
+            <p>Having just finished yet another iteration of the <a href="research/tapir/">TAPIR
+paper</a>, I thought I would try to
+distill what I have learned from the project. It has been a much
+harder and more interesting project than I anticipated but the photos
+of baby tapirs helped me get through it.</p>
+
+<h3 id="1-replication-protocols-should-be-co-designed-with-the-systems-that-use-them-not-applications">1. Replication protocols should be co-designed with the systems that use them, <em>not</em> applications.</h3>
+
+<div class="col-xs-4 pull-right">
+<img src="https://i.imgur.com/xJjwVhP.jpg" alt="Felix the tapir" class="img-thumbnail" />
+</div>
+
+<p>Applications do not commonly use replication protocols directly today;
+instead, they are usually packaged into a fault-tolerant service or
+storage system.  As Mike Burrows notes [1], there are a lot of reasons
+to put Paxos into a lock server and present it as a service, rather
+than package it as a library.  With this in mind, we should be
+designing replication protocols for distributed systems, not
+applications.</p>
+
+<p>Unfortunately, many high-performance replication protocols are
+designed for applications, so are often not super useful for
+distributed systems. For example, eventual consistency protocols
+expect the application to resolve conflicts after they happen, but a
+storage system using the protocol has no idea how to resolve a
+conflict in data from an application (i.e., Dynamo [2] cannot resolve
+a conflict in the Amazon shopping cart, which is why I always end up
+with two boxes of cereal from Amazon Fresh). Protocols for commutative
+operations, like Generalized Paxos [3] and EPaxos [4], have a similar
+problem (i.e., they do not know which application operations commute).</p>
+
+<!---
+Optimized replication protocols are often not super useful for
+distributed systems.  For example, protocols , only work if
+the the storage system *and* application have commutative
+operations. This means that system designer has to carefully design
+for commutativity and then count on the application programmer to do
+the same; even then, a large set of systems and application operations
+just do not commute. Eventual consistency protocols have a similar
+problem: they expect the application to resolve conflicts after they
+happen, but a storage system has no idea how to resolve a conflict in
+data handed to them by *their* application.
+For example, Dynamo [2]
+has to rely on Amazon's shopping cart application to resolve conflicts
+because it does not know how to do so in a general-purpose way.
+!-->
+
+<h3 id="2-paxos-is-too-strict-and-expensive-for-a-lot-of-systems">2. Paxos is too strict (and expensive) for a lot of systems.</h3>
+
+<div class="col-xs-4 pull-right">
+<img src="https://c2.staticflickr.com/6/5510/11690414524_4a2d975825_b.jpg" alt="Felix the tapir" class="img-thumbnail" />
+</div>
+
+<p>Today, systems that want to provide strong guarantees use Paxos [6]
+(or, if you are hipper than me, RAFT [7]), and everyone else uses
+something cheaper.  Paxos enforces a strict serial ordering of
+operations across replicas, which is useful, but requires coordination
+across replicas on <em>every</em> operation, which is expensive.</p>
+
+<p>What we found in the TAPIR project is that Paxos is <em>too</em> strong for
+some strong system guarantees and, as a result, is wasting work and
+performance for those systems.  For example, a lock server wants
+<em>mutual exclusion</em>, but Paxos provides a strict serial ordering of
+lock operations. This means that a lock server built using Paxos for
+replication is coordinating across replicas even when it is not
+necessary to ensure mutual exclusion.</p>
+
+<p>Even more interesting, a transactional storage system wants strictly
+serializable transactions, which requires a linearizable ordering of
+transactions but only requires a <em>partial</em> ordering of operations
+(because not all transactions touch all keys).  With some careful
+design in TAPIR, we are able to enforce a linearizable ordering of
+transactions with <em>no</em> ordering of operations.</p>
+
+<h3 id="3-we-can-still-provide-the-same-strong-guarantees-to-applications-without-consistency">3. We can still provide the same strong guarantees to applications without consistency!</h3>
+
+<div class="col-xs-4 pull-right">
+<img src="https://37.media.tumblr.com/2d3ef9090bd30d760d621dfca6512a65/tumblr_mojh9fi4Ef1qd479ro1_500.jpg" alt="Felix the tapir" class="img-thumbnail" />
+</div>
+
+<p>At the core of the TAPIR project is a new replication protocol, which
+we call <em>inconsistent replication</em> or IR, that provides
+fault-tolerance but no consistency.  IR is well-designed to provide
+high-performance replication for a class of system guarantees,
+including mutual exclusion and ACID with linearizable transaction
+ordering.  Instead of an ordered operation log, IR provides an
+<em>unordered operation set</em>.  Without ordering, IR is able process
+operations without a leader or any synchronous cross-replica
+coordination, similar to eventual consistency protocols.</p>
+
+<p>But, unlike eventual consistency, IR allows distributed systems to
+<em>avoid</em> conflicts before they happen, rather than resolving them after
+they happen. This allows systems to retain strong guarantees for their
+applications and hide any inconsistencies from application
+programmers. IR’s limitation is that it can only support system
+guarantees that depend on conflicts between <em>pairs</em> of operations.
+For example, IR can be used to replicate a lock server but not a sales
+app that only sells thing in stock. The lock server’s mutual exclusion
+guarantee is a pair-wise invariant, but calculating the store’s stock
+requires a full history of operations that only strong consistency can
+achieve.</p>
+
+<h3 id="4-good-clock-synchronization-is-available-and-we-should-use-it">4. Good clock synchronization is available and we should use it.</h3>
+
+<div class="col-xs-4 pull-right">
+<img src="https://c1.staticflickr.com/1/6/76059463_2ec021caa9.jpg" alt="Felix the tapir" class="img-thumbnail" />
+</div>
+
+<p>Without ordering in the replication layer, TAPIR needs another way to
+efficiently order transactions, so it uses loosely synchronized clocks
+for better performance.  Throughout the project, we have continuously been
+surprised by how good clock synchronization is on various
+platforms. In fact, we designed several extensions to TAPIR to cope
+with clock skew but never had to pull them out.</p>
+
+<p>When we first started testing on our local cluster using PTP [8],
+which is available as a Linux package and does not require any special
+hardware, the clock synchronization was so good that it broke our
+random number generator because we were seeding it with the clock!  As
+others [9] have noticed, PTP is able to offer at least sub-microsecond
+synchronization without any special support. When we moved to
+wide-area experiments using <a href="https://cloud.google.com/compute/">Google Compute
+Engine</a>, we found clocks skews
+within milliseconds, even though we were using virtual machines over
+the wide-area.</p>
+
+<!---
+Table 1 gives a profile of our Google Compute
+Engine testbed.
+
+|        | US  | Europe | Asia  | US | Europe | Asia |
+| ------ | --- | ------ | ----- | --- | --- | --- |
+| US     | 1.2 | 111.3  | 166.5 | 3.4 | 1.3 | 1.86 |
+| Europe |     | 0.8    | 261.8 | | 0.1 | 1.9 |
+| Asia|  |     | 10.8   |       |   | .3 |
+!--->
+
+<!---
+### 5. Tapirs are cute and baby tapirs are really cute.
+
+We have experimentally verified that tapirs are adorable. By looking
+at countless photos of baby tapirs in real-world conditions, we have
+measured 100% of baby tapirs to be extremely cute.
+!--->
+
+<h3 id="summary">Summary</h3>
+
+<div class="col-xs-4 pull-right">
+<img src="https://caveviews.blogs.com/.a/6a00d8341bffd953ef017d4295b0d2970c-pi" alt="Felix the tapir" class="img-thumbnail" />
+</div>
+
+<p>We should design better replication protocols optimized for
+distributed systems, not applications. For a class of strong system
+guarantees, Paxos is too strong and eventual consistency is too
+weak. Instead, we have designed <em>inconsistent replication</em>, a new
+replication protocol that provides fault-tolerance without consistency
+for distributed systems. Using IR and loosely synchronized clocks,
+TAPIR is able to provide high-performance distributed transactions.</p>
+
+<p>We have experimentally verified that baby tapirs are adorable. By
+looking at countless photos of baby tapirs in real-world conditions,
+we have measured 100% of baby tapirs to be extremely cute.</p>
+
+<!---
+To find out more, check out our tech report:
+- **[Building Consistent Transactions with Inconsistent Replication.](/papers/tapir-tr14.pdf)**   
+Irene Zhang, Naveen Kr. Sharma, Adriana Szekeres, Arvind Krishnamurthy, Dan R. K. Ports.   
+UW Technical Report UW-CSE-14-12-01.
+!--->
+
+<h3 id="references">References</h3>
+
+<p>[1] M. Burrows. <em>The Chubby Lock Service for Loosely-coupled
+Distributed Systems.</em> In Proc. of OSDI, 2006.</p>
+
+<p>[2] G. DeCandia, D. Hastorun, M. Jampani, G. Kakulapati, A. Lakshman,
+A. Pilchin, S. Sivasubramanian, P. Vosshall, and W. Vogels. <em>Dynamo:
+Amazon’s Highly Available Key-value Store.</em> In Proc. of SOSP, 2007.</p>
+
+<p>[3] L. Lamport. <em>Generalized Consensus and Paxos.</em> Technical Report 33,
+Microsoft Research, 2005.</p>
+
+<p>[4] I. Moraru, D. G. Andersen, and M. Kaminsky. <em>There is more
+Consensus in Egalitarian Parliaments.</em> In Proc. of SOSP, 2013.</p>
+
+<p>[5] P. Hunt, M. Konar, F. P. Junqueira, and B. Reed. <em>Zookeeper:
+Wait-free coordination for Internet-scale Systems.</em> In Proc. of USENIX
+ATC, 2010.</p>
+
+<p>[6] L. Lamport. <em>Paxos Made Simple.</em> ACM Sigact News, 2001.</p>
+
+<p>[7] D. Ongaro and J. Ousterhout. <em>In Search of an Understandable
+Consensus Algorithm.</em> In Proc. of USENIX ATC. 2014.</p>
+
+<p>[8] <a href="http://www.nist.gov/el/isd/ieee/ieee1588.cfm.">IEEE 1588 Standard for A Precision Clock Synchronization Protocol
+for Networked Measurement and Control
+Systems.</a></p>
+
+<p>[9] J. Perry, et al. <em>Fastpass: a centralized zero-queue
+datacenter network.</em> In Proc. of SIGCOMM. 2014.</p>
+
+
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <div class="contact">
+              <div class="contact-title">
+                Contact</div>
+                <ul class="fa-ul">
+	          <li><i class="fa-li fa fa-envelope"></i>irene.zhang
+	            @microsoft.com</li>
+	          <li><i class="fa-li fa fa-building"></i>Office 2869,
+                    Building 99</li>
+	          <li><i class="fa-li fa fa-location-arrow"></i>14820 NE
+	            36th St.
+                    <br class="hidden-xs"> Redmond, WA</li>
+	          <li><i class="fa-li fa
+	                        fa-github-alt"></i><a href="https://github.com/iyzhang/">iyzhang@github</a></li>
+                  	          <li><i class="fa-li fa fa-twitter"></i><a href="https://twitter.com/schemeprincess">schemeprincess@twitter</a></li>
+
+                </ul>
+            </div>
+            <div class="contact hidden-xs">
+              <div class="contact-title">News</div>
+              <ul class="media-list">
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      15 August 2022
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2022/08/15/datacenter-hardware.html">The Fall of Datacenter Software</a>
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-left news hidden-xs">
+                    
+	              <img class="media-object img-thumbnail"
+                           src="img/demikernel.jpg" >
+                      
+                  </div>
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      07 August 2021
+                    </h5>
+                    
+                    I'm extremely happy to announce that I will have three papers on
+kernel-bypass systems in SOSP 2021!  Our work on the [Demikernel
+datapath OS](papers/demikernel-sosp21.pdf), the [Persephone
+scheduler](papers/persephone-sosp21.pdf) for microsecond RPC and the
+[PRISM RDMA](papers/prism-sosp21.pdf) interface for distributed
+storage.
+
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      18 July 2021
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2021/07/18/superhero-network.html">The Superhero Network - A Case for Expertise in CS Sexism and Harassment</a>
+                    
+                  </div>
+                </li>
+                
+              </ul>
+              <p><a href="news/">&nbsp;&nbsp;&nbsp;Older posts&hellip;</a></p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>
+          <a href="https://www.microsoft.com/en-us/research/group/systems-research-group-redmond/">Systems
+          Research Group</a> at 
+          <a href="https://www.microsoft.com/">Microsoft Research</a>
+        </p>
+      </div>
+    </body>
+</html>

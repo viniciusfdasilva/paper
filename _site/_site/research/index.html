@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <Title>Vinicius F. Silva: Current Research</title>
+        <meta name="viewport" content="width=device-width,
+				       initial-scale=1.0">
+	<link href="https://irenezhang.net/" rel="canonical">
+        <base href="https://irenezhang.net/">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/group.css" rel="stylesheet">
+        <link rel="alternate" type="application/atom+xml" title="Atom"
+              href="blog/blog.xml">
+        <link href="https://fonts.googleapis.com/css?family=Quattrocento|Quattrocento+Sans:400,400i,700|Raleway:500,700"
+              rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Piwik -->
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            _paq.push(["setDomains", ["*.irenezhang.net","*.irenezhang.com","*.schemeprincess.com"]]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+              var u="//www.ambulatoryclam.net/piwik/";
+              _paq.push(['setTrackerUrl', u+'piwik.php']);
+              _paq.push(['setSiteId', '2']);
+              var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+              g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
+        <noscript><p><img src="//www.ambulatoryclam.net/piwik/piwik.php?idsite=2" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+    </head>
+    <body>
+      <div class="header">
+        <div class="title clearfix">Irene Y. Zhang</div>
+	<ul class="nav nav-pills nav-justified">
+          
+          
+          <li >
+            <a href="/">
+              Home
+            </a>
+          </li>
+          
+          
+          <li class="active">
+            <a href="/research/">
+              - Research -
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/publications.html">
+              Publications
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/service.html">
+              Service
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/news/">
+              Blog
+            </a>
+          </li>
+          
+          
+          <li >
+            <a href="/code.html">
+              Code
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-8">
+	    
+            
+            <h2>Current Research</h2>
+	    
+            <p>My current research focuses on datapath operating systems for
+microsecond-scale datacenter systems.</p>
+
+<ul class="media-list">
+<li class="media">
+<div class="media-left hidden-xs">
+<img style="width:100px" class="media-object img-circle" src="../img/demikernel.jpg" />
+</div>
+<div class="media-body">
+
+    <span class="links btn-group pull-right">
+    <a href="papers/demikernel-sosp21.pdf" class="btn btn-default btn-xs"><i class="fa fa-file-text-o"></i> Paper</a>
+    </span>
+
+    <h3 class="media-heading">Demikernel</h3>
+    The Demikernel is a new datapath OS and architecture for
+    microsecond-scale datacenter systems and kernel-bypass devices.
+    Demikernel accommodates heterogenous kernel-bypass devices with a
+    flexible library OS architecture and new high-level datapath API
+    with an asynchronous I/O interface and zero-copy memory
+    semantics for microsecond I/O processing.  Demikernel implements
+    this API for RDMA, DPDK and SPDK devices with new nanosecond-scale
+    I/O stacks in Rust.  Once ported to Demikernel, microsecond
+    datacenter systems can run across different devices with no code changes.
+    <br />
+    </div>
+
+</li>
+
+<li class="media">
+<div class="media-left hidden-xs">
+<img style="width:100px" class="media-object img-circle" src="../img/treehouse.png" />
+</div>
+<div class="media-body">
+
+    <span class="links btn-group pull-right">
+    <a href="papers/treehouse-arxiv22.pdf" class="btn btn-default btn-xs"><i class="fa fa-file-text-o"></i> Paper</a>
+    </span>
+<h3 class="media-heading">Treehouse</h3>
+
+Treehouse is new project that proposes a software-centric approach to
+green datacenters. While existing research aims to reduce energy usage
+of datacenter hardware, we argue that being energy-aware in the design
+of datacenter software is equally important.  To that end, Treehouse
+aims to make energy and carbon visible to application developers on a
+fine-grained basis, modify system APIs to make informed trade offs
+between performance and carbon emissions, and raise the level of
+application programming for flexible use of more energy efficient
+means of compute and storage. Find out more about the Treehouse project at our <a href="https://treehouse-research.github.io">project webpage</a>!
+    <br />
+    </div>
+
+</li>
+</ul>
+
+<h2 id="past-research">Past Research</h2>
+
+<p>My PhD research broadly covered distributed systems for large-scale,
+wide-area applications. Some recent projects are listed below.</p>
+
+<ul class="media-list">
+<li class="media">
+<div class="media-left hidden-xs">
+<img style="width:100px" class="media-object img-circle" src="../img/marvin.jpg" />
+</div>
+<div class="media-body">
+
+    <span class="links btn-group pull-right">
+    <a href="papers/marvin-tr19.pdf" class="btn btn-default btn-xs"><i class="fa fa-file-text-o"></i> Paper</a>
+    </span>
+
+    <h3 class="media-heading">Marvin</h3>
+    Marvin is a new memory manager for Android that co-designs the
+    application runtime (i.e., JVM) and operating system.
+    Marvin's key insight is that all mobile applications run within
+    the <i>same</i> runtime, so we can leverage  runtime insight into the
+    application for better  resource management.  Marvin implements
+    almost all memory management in a modified Android Runtime to
+    achieve better  memory utilization and performance.
+    <br />
+    </div>
+
+</li>
+    <li class="media">
+		<div class="media-left hidden-xs">
+    <img style="width:100px" class="media-object img-rounded" src="../img/felix.jpg" />
+	</div>
+	<div class="media-body">
+
+<span class="links btn-group pull-right">
+<a href="papers/tapir-sosp15.pdf" class="btn btn-default btn-xs"><i class="fa fa-file-text-o"></i> Paper</a>
+<a href="https://www.youtube.com/watch?v=yE3eMxYJDiE" class="btn btn-default btn-xs"><i class="fa fa-film"></i> Talk</a>
+<a href="https://github.com/UWSysLab/tapir" class="btn btn-default btn-xs"><i class="fa fa-code"></i> Code</a>
+<a href="tapir/index.html" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> More</a>
+</span>
+
+<h3 class="media-heading">TAPIR</h3>
+
+The Transactional Application Protocol for Inconsistent Replication
+(TAPIR) is a new protocol for linearizable distributed transactions
+built using replication with <em>no consistency guarantees</em>. By
+enforcing consistency <em>only</em> at the transaction layer, TAPIR
+eliminates coordination at the replication layer, enabling TAPIR to
+provide the same transaction model and consistency guarantees as
+existing systems like Spanner with better latency and throughput.
+</div>
+</li>
+
+    <li class="media">
+		<div class="media-left hidden-xs">
+			<img style="width:100px" class="media-object img-rounded" src="../img/diamond.jpg" />
+	</div>
+	<div class="media-body">
+	
+<span class="links btn-group pull-right">
+<a href="papers/diamond-osdi16.pdf" class="btn btn-default btn-xs"><i class="fa fa-file-text-o"></i> Paper</a>
+<a href="https://www.usenix.org/conference/osdi16/technical-sessions/presentation/zhang-irene" class="btn btn-default btn-xs"><i class="fa fa-volume-up"></i> Talk</a>
+<a href="https://github.com/UWSysLab/diamond" class="btn btn-default btn-xs"><i class="fa fa-code"></i> Code</a>
+<a href="//sapphire.cs.washington.edu/research/project/diamond.html" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> More</a>
+</span>
+
+	<h3 class="media-heading">Diamond</h3>
+
+Diamond is a new data management system for wide-area, reactive
+applications.  Reactive applications give users the illusion of
+continuous synchronization across mobile devices and the cloud server.
+Diamond simplifies this task by providing applications with persistent
+cloud storage, reliable synchronization between storage and mobile
+devices, and automated execution of application code in response to
+shared data updates.  &lt;/li&gt;
+
+&lt;/ul&gt;
+
+
+
+
+</div></li></ul>
+
+          </div>
+          <div class="col-sm-4 col-xs-12">
+            <div class="contact">
+              <div class="contact-title">
+                Contact</div>
+                <ul class="fa-ul">
+	          <li><i class="fa-li fa fa-envelope"></i>irene.zhang
+	            @microsoft.com</li>
+	          <li><i class="fa-li fa fa-building"></i>Office 2869,
+                    Building 99</li>
+	          <li><i class="fa-li fa fa-location-arrow"></i>14820 NE
+	            36th St.
+                    <br class="hidden-xs"> Redmond, WA</li>
+	          <li><i class="fa-li fa
+	                        fa-github-alt"></i><a href="https://github.com/iyzhang/">iyzhang@github</a></li>
+                  	          <li><i class="fa-li fa fa-twitter"></i><a href="https://twitter.com/schemeprincess">schemeprincess@twitter</a></li>
+
+                </ul>
+            </div>
+            <div class="contact hidden-xs">
+              <div class="contact-title">News</div>
+              <ul class="media-list">
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      15 August 2022
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2022/08/15/datacenter-hardware.html">The Fall of Datacenter Software</a>
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-left news hidden-xs">
+                    
+	              <img class="media-object img-thumbnail"
+                           src="img/demikernel.jpg" >
+                      
+                  </div>
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      07 August 2021
+                    </h5>
+                    
+                    <p>I’m extremely happy to announce that I will have three papers on
+kernel-bypass systems in SOSP 2021!  Our work on the <a href="papers/demikernel-sosp21.pdf">Demikernel
+datapath OS</a>, the <a href="papers/persephone-sosp21.pdf">Persephone
+scheduler</a> for microsecond RPC and the
+<a href="papers/prism-sosp21.pdf">PRISM RDMA</a> interface for distributed
+storage.</p>
+
+                    
+                  </div>
+                </li>
+                
+                <li class="media">
+                  
+                  <div class="media-body">
+                    <h5 class="media-heading">
+                      18 July 2021
+                    </h5>
+                    
+                    <b>New Blog Post:</b>
+                        <a href="/blog/2021/07/18/superhero-network.html">The Superhero Network - A Case for Expertise in CS Sexism and Harassment</a>
+                    
+                  </div>
+                </li>
+                
+              </ul>
+              <p><a href="news/">&nbsp;&nbsp;&nbsp;Older posts&hellip;</a></p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>
+          <a href="https://www.microsoft.com/en-us/research/group/systems-research-group-redmond/">Systems
+          Research Group</a> at 
+          <a href="https://www.microsoft.com/">Microsoft Research</a>
+        </p>
+      </div>
+    </body>
+</html>
